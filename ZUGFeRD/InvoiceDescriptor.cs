@@ -791,7 +791,7 @@ namespace s2industries.ZUGFeRD
                 TypeCode = typeCode,
                 AllowanceChargeBasisAmount = allowanceChargeBasisAmount,
                 ExemptionReasonCode = exemptionReasonCode,
-                ExemptionReason = exemptionReason
+                ExemptionReason = exemptionReason,
                 TaxAmount = taxAmount
             };
 
