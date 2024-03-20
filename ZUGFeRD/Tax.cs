@@ -33,11 +33,19 @@ namespace s2industries.ZUGFeRD
         /// 
         /// This information is calculated live.
         /// </summary>
+        private decimal FixedTaxAmount; //possibility to override tax amount, because of rounding errors
         public decimal TaxAmount
         {
             get
             {
-                return 0.01m * this.Percent * this.BasisAmount;
+                if(decimal.Zero == FixedTaxAmount) {
+                    return 0.01m * this.Percent * this.BasisAmount;
+                } else {
+                    return FixedTaxAmount;
+                }
+            }
+            set {
+                FixedTaxAmount = value;
             }
         }
 

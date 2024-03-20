@@ -782,7 +782,7 @@ namespace s2industries.ZUGFeRD
         /// <param name="allowanceChargeBasisAmount"></param>
         /// <param name="exemptionReasonCode"></param>
         /// <param name="exemptionReason"></param>
-        public void AddApplicableTradeTax(decimal basisAmount, decimal percent, TaxTypes typeCode, TaxCategoryCodes? categoryCode = null, decimal allowanceChargeBasisAmount = 0, TaxExemptionReasonCodes? exemptionReasonCode = null, string exemptionReason = null)
+        public void AddApplicableTradeTax(decimal basisAmount, decimal percent, TaxTypes typeCode, TaxCategoryCodes? categoryCode = null, decimal allowanceChargeBasisAmount = 0, TaxExemptionReasonCodes? exemptionReasonCode = null, string exemptionReason = null, decimal taxAmount = 0)
         {
             Tax tax = new Tax()
             {
@@ -792,6 +792,7 @@ namespace s2industries.ZUGFeRD
                 AllowanceChargeBasisAmount = allowanceChargeBasisAmount,
                 ExemptionReasonCode = exemptionReasonCode,
                 ExemptionReason = exemptionReason
+                TaxAmount = taxAmount
             };
 
             if ((categoryCode != null) && (categoryCode.Value != TaxCategoryCodes.Unknown))
