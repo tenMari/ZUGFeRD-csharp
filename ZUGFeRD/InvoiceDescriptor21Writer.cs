@@ -813,6 +813,10 @@ namespace s2industries.ZUGFeRD
                     Writer.WriteElementString("udt:Indicator", tradeAllowanceCharge.ChargeIndicator ? "true" : "false");
                     Writer.WriteEndElement(); // !ram:ChargeIndicator
 
+                    Writer.WriteStartElement("ram:CalculationPercent", profile: Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
+                    Writer.WriteValue(_formatDecimal(100 / tradeAllowanceCharge.BasisAmount * tradeAllowanceCharge.ActualAmount));
+                    Writer.WriteEndElement();
+
                     Writer.WriteStartElement("ram:BasisAmount", profile: Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
                     Writer.WriteValue(_formatDecimal(tradeAllowanceCharge.BasisAmount));
                     Writer.WriteEndElement();
