@@ -82,6 +82,11 @@ namespace s2industries.ZUGFeRD
         /// an establishment, domicile or habitual residence in France).
         /// </summary>
         EReporting = 128,
+
+        /// <summary>
+        /// Invoice format based on EU Directive 2014/55/EU, adopted to Germany in E-Invoice Law of April 4, 2017 (BGBl. I p. 770) (as valid until 31/02/2024)
+        /// </summary>
+        XRechnung2 = 256
     }
 
 
@@ -116,10 +121,10 @@ namespace s2industries.ZUGFeRD
                 case "urn:cen.eu:en16931:2017": return Profile.Comfort;
                 case "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended": return Profile.Extended;
                 case "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_1.2": return Profile.XRechnung1;
-                case "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0": return Profile.XRechnung;
-                case "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.1": return Profile.XRechnung;
-                case "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.2": return Profile.XRechnung;
-                case "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3": return Profile.XRechnung;
+                case "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0": return Profile.XRechnung2;
+                case "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.1": return Profile.XRechnung2;
+                case "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.2": return Profile.XRechnung2;
+                case "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3": return Profile.XRechnung2;
                 case "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0": return Profile.XRechnung;
                 case "urn.cpro.gouv.fr:1p0:ereporting" : return Profile.EReporting;
             }
@@ -159,17 +164,8 @@ namespace s2industries.ZUGFeRD
                         case Profile.Comfort: return "urn:cen.eu:en16931:2017";
                         case Profile.Extended: return "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended";
                         case Profile.XRechnung1: return "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_1.2";
-                        case Profile.XRechnung:
-                            {
-                                if (DateTime.Now >= new DateTime(2024, 02, 01))
-                                {
-                                    return "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0";
-                                }
-                                else
-                                {
-                                    return "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3";
-                                }
-                            }
+                        case Profile.XRechnung2: return "urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.3";
+                        case Profile.XRechnung: return "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0";
                         case Profile.EReporting: return "urn.cpro.gouv.fr:1p0:ereporting";
                         default: throw new Exception("Unsupported profile for ZUGFeRD version 21");
                     }                    

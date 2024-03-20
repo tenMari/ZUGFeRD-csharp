@@ -33,7 +33,7 @@ namespace s2industries.ZUGFeRD
         private InvoiceDescriptor Descriptor;
 
 
-        private readonly Profile ALL_PROFILES = Profile.Minimum | Profile.BasicWL | Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung;
+        private readonly Profile ALL_PROFILES = Profile.Minimum | Profile.BasicWL | Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung;
 
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace s2industries.ZUGFeRD
                 //Gruppierung von allgemeinen Positionsangaben
                 if (tradeLineItem.AssociatedDocument != null)
                 {
-                    Writer.WriteStartElement("ram:AssociatedDocumentLineDocument", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                    Writer.WriteStartElement("ram:AssociatedDocumentLineDocument", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                     if (!String.IsNullOrWhiteSpace(tradeLineItem.AssociatedDocument.LineID))
                     {
                         Writer.WriteElementString("ram:LineID", tradeLineItem.AssociatedDocument.LineID);
@@ -144,20 +144,20 @@ namespace s2industries.ZUGFeRD
 
                 #region SpecifiedTradeProduct
                 //Eine Gruppe von betriebswirtschaftlichen Begriffen, die Informationen über die in Rechnung gestellten Waren und Dienstleistungen enthält
-                Writer.WriteStartElement("ram:SpecifiedTradeProduct", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                Writer.WriteStartElement("ram:SpecifiedTradeProduct", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                 if ((tradeLineItem.GlobalID != null) && (tradeLineItem.GlobalID.SchemeID != GlobalIDSchemeIdentifiers.Unknown) && !String.IsNullOrWhiteSpace(tradeLineItem.GlobalID.ID))
                 {
-                    _writeElementWithAttribute(Writer, "ram:GlobalID", "schemeID", tradeLineItem.GlobalID.SchemeID.EnumToString(), tradeLineItem.GlobalID.ID, Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                    _writeElementWithAttribute(Writer, "ram:GlobalID", "schemeID", tradeLineItem.GlobalID.SchemeID.EnumToString(), tradeLineItem.GlobalID.ID, Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                 }
 
-                Writer.WriteOptionalElementString("ram:SellerAssignedID", tradeLineItem.SellerAssignedID, Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
-                Writer.WriteOptionalElementString("ram:BuyerAssignedID", tradeLineItem.BuyerAssignedID, Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                Writer.WriteOptionalElementString("ram:SellerAssignedID", tradeLineItem.SellerAssignedID, Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
+                Writer.WriteOptionalElementString("ram:BuyerAssignedID", tradeLineItem.BuyerAssignedID, Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
 
                 // BT-153
                 Writer.WriteOptionalElementString("ram:Name", tradeLineItem.Name, Profile.Basic | Profile.Comfort | Profile.Extended);
-                Writer.WriteOptionalElementString("ram:Name", isCommentItem ? "TEXT" : tradeLineItem.Name, Profile.XRechnung1 | Profile.XRechnung); // XRechnung erfordert einen Item-Namen (BR-25)
+                Writer.WriteOptionalElementString("ram:Name", isCommentItem ? "TEXT" : tradeLineItem.Name, Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung); // XRechnung erfordert einen Item-Namen (BR-25)
 
-                Writer.WriteOptionalElementString("ram:Description", tradeLineItem.Description, Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                Writer.WriteOptionalElementString("ram:Description", tradeLineItem.Description, Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
 
                 if (tradeLineItem.ApplicableProductCharacteristics != null && tradeLineItem.ApplicableProductCharacteristics.Any())
                 {
@@ -176,15 +176,15 @@ namespace s2industries.ZUGFeRD
                 #region SpecifiedLineTradeAgreement (Basic, Comfort, Extended, XRechnung)
                 //Eine Gruppe von betriebswirtschaftlichen Begriffen, die Informationen über den Preis für die in der betreffenden Rechnungsposition in Rechnung gestellten Waren und Dienstleistungen enthält
 
-                if (new Profile[] { Profile.Basic, Profile.Comfort, Profile.Extended, Profile.XRechnung, Profile.XRechnung1 }.Contains(descriptor.Profile))
+                if (new Profile[] { Profile.Basic, Profile.Comfort, Profile.Extended, Profile.XRechnung, Profile.XRechnung2, Profile.XRechnung1 }.Contains(descriptor.Profile))
                 {
-                    Writer.WriteStartElement("ram:SpecifiedLineTradeAgreement", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                    Writer.WriteStartElement("ram:SpecifiedLineTradeAgreement", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
 
                     #region BuyerOrderReferencedDocument (Comfort, Extended, XRechnung)
                     //Detailangaben zur zugehörigen Bestellung                   
                     if (tradeLineItem.BuyerOrderReferencedDocument != null)
                     {
-                        Writer.WriteStartElement("ram:BuyerOrderReferencedDocument", Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                        Writer.WriteStartElement("ram:BuyerOrderReferencedDocument", Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
 
                         #region IssuerAssignedID
                         //Bestellnummer
@@ -262,7 +262,7 @@ namespace s2industries.ZUGFeRD
                     // BT-148
                     if (tradeLineItem.GrossUnitPrice.HasValue || (tradeLineItem.TradeAllowanceCharges.Count > 0))
                     {
-                        Writer.WriteStartElement("ram:GrossPriceProductTradePrice", Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                        Writer.WriteStartElement("ram:GrossPriceProductTradePrice", Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                         _writeOptionalAmount(Writer, "ram:ChargeAmount", tradeLineItem.GrossUnitPrice, 4);
                         if (tradeLineItem.UnitQuantity.HasValue)
                         {
@@ -302,7 +302,7 @@ namespace s2industries.ZUGFeRD
 
                     #region NetPriceProductTradePrice                    
                     //Im Nettopreis sind alle Zu- und Abschläge enthalten, jedoch nicht die Umsatzsteuer.
-                    Writer.WriteStartElement("ram:NetPriceProductTradePrice", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                    Writer.WriteStartElement("ram:NetPriceProductTradePrice", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                     _writeOptionalAmount(Writer, "ram:ChargeAmount", tradeLineItem.NetUnitPrice, 4);
 
                     if (tradeLineItem.UnitQuantity.HasValue)
@@ -320,12 +320,12 @@ namespace s2industries.ZUGFeRD
                 #endregion
 
                 #region SpecifiedLineTradeDelivery (Basic, Comfort, Extended)
-                Writer.WriteStartElement("ram:SpecifiedLineTradeDelivery", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                Writer.WriteStartElement("ram:SpecifiedLineTradeDelivery", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                 _writeElementWithAttribute(Writer, "ram:BilledQuantity", "unitCode", tradeLineItem.UnitCode.EnumToString(), _formatDecimal(tradeLineItem.BilledQuantity, 4));
 
                 if (tradeLineItem.DeliveryNoteReferencedDocument != null)
                 {
-                    Writer.WriteStartElement("ram:DeliveryNoteReferencedDocument", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung));
+                    Writer.WriteStartElement("ram:DeliveryNoteReferencedDocument", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung));
                     Writer.WriteOptionalElementString("ram:IssuerAssignedID", tradeLineItem.DeliveryNoteReferencedDocument.ID);
 
                     if (tradeLineItem.DeliveryNoteReferencedDocument.IssueDateTime.HasValue)
@@ -357,9 +357,9 @@ namespace s2industries.ZUGFeRD
                 #endregion
 
                 #region SpecifiedLineTradeSettlement                
-                Writer.WriteStartElement("ram:SpecifiedLineTradeSettlement", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                Writer.WriteStartElement("ram:SpecifiedLineTradeSettlement", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                 #region ApplicableTradeTax
-                Writer.WriteStartElement("ram:ApplicableTradeTax", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                Writer.WriteStartElement("ram:ApplicableTradeTax", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                 Writer.WriteElementString("ram:TypeCode", tradeLineItem.TaxType.EnumToString());
                 Writer.WriteOptionalElementString("ram:ExemptionReason", _translateTaxCategoryCode(tradeLineItem.TaxCategoryCode), Profile.Extended);
                 Writer.WriteElementString("ram:CategoryCode", tradeLineItem.TaxCategoryCode.EnumToString()); // BT-151
@@ -377,7 +377,7 @@ namespace s2industries.ZUGFeRD
                 #region BillingSpecifiedPeriod
                 if (tradeLineItem.BillingPeriodStart.HasValue || tradeLineItem.BillingPeriodEnd.HasValue)
                 {
-                    Writer.WriteStartElement("ram:BillingSpecifiedPeriod", Profile.BasicWL | Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                    Writer.WriteStartElement("ram:BillingSpecifiedPeriod", Profile.BasicWL | Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                     if (tradeLineItem.BillingPeriodStart.HasValue)
                     {
                         Writer.WriteStartElement("ram:StartDateTime");
@@ -413,7 +413,7 @@ namespace s2industries.ZUGFeRD
                     _total = tradeLineItem.NetUnitPrice.Value * tradeLineItem.BilledQuantity;
                 }
 
-                Writer.WriteStartElement("ram:LineTotalAmount", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                Writer.WriteStartElement("ram:LineTotalAmount", Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                 Writer.WriteValue(_formatDecimal(_total));
                 Writer.WriteEndElement(); // !ram:LineTotalAmount
 
@@ -429,10 +429,10 @@ namespace s2industries.ZUGFeRD
 
                 #region ReceivableSpecifiedTradeAccountingAccount
                 //Detailinformationen zur Buchungsreferenz
-                if ((descriptor.Profile == Profile.XRechnung1 || descriptor.Profile == Profile.XRechnung) && tradeLineItem.ReceivableSpecifiedTradeAccountingAccounts.Count > 0)
+                if ((descriptor.Profile == Profile.XRechnung1 || descriptor.Profile == Profile.XRechnung2 || descriptor.Profile == Profile.XRechnung) && tradeLineItem.ReceivableSpecifiedTradeAccountingAccounts.Count > 0)
                 {
                     //only one ReceivableSpecifiedTradeAccountingAccount (BT-133) is allowed in Profile XRechnung
-                    Writer.WriteStartElement("ram:ReceivableSpecifiedTradeAccountingAccount", Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                    Writer.WriteStartElement("ram:ReceivableSpecifiedTradeAccountingAccount", Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                     {
                         Writer.WriteStartElement("ram:ID");
                         Writer.WriteValue(tradeLineItem.ReceivableSpecifiedTradeAccountingAccounts[0].TradeAccountID);  //BT-133
@@ -494,7 +494,7 @@ namespace s2industries.ZUGFeRD
             #region SellerOrderReferencedDocument (BT-14: Comfort, Extended)
             if (null != this.Descriptor.SellerOrderReferencedDocument && !string.IsNullOrWhiteSpace(Descriptor.SellerOrderReferencedDocument.ID))
             {
-                Writer.WriteStartElement("ram:SellerOrderReferencedDocument", Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                Writer.WriteStartElement("ram:SellerOrderReferencedDocument", Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                 Writer.WriteElementString("ram:IssuerAssignedID", this.Descriptor.SellerOrderReferencedDocument.ID);
                 if (this.Descriptor.SellerOrderReferencedDocument.IssueDateTime.HasValue)
                 {
@@ -517,7 +517,7 @@ namespace s2industries.ZUGFeRD
                 Writer.WriteElementString("ram:IssuerAssignedID", this.Descriptor.OrderNo);
                 if (this.Descriptor.OrderDate.HasValue)
                 {
-                    Writer.WriteStartElement("ram:FormattedIssueDateTime", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung));
+                    Writer.WriteStartElement("ram:FormattedIssueDateTime", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung));
                     Writer.WriteStartElement("qdt:DateTimeString");
                     Writer.WriteAttributeString("format", "102");
                     Writer.WriteValue(_formatDate(this.Descriptor.OrderDate.Value));
@@ -537,7 +537,7 @@ namespace s2industries.ZUGFeRD
                 Writer.WriteElementString("ram:IssuerAssignedID", this.Descriptor.ContractReferencedDocument.ID);
                 if (this.Descriptor.ContractReferencedDocument.IssueDateTime.HasValue)
                 {
-                    Writer.WriteStartElement("ram:FormattedIssueDateTime", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung));
+                    Writer.WriteStartElement("ram:FormattedIssueDateTime", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung));
                     Writer.WriteStartElement("qdt:DateTimeString");
                     Writer.WriteAttributeString("format", "102");
                     Writer.WriteValue(_formatDate(this.Descriptor.ContractReferencedDocument.IssueDateTime.Value));
@@ -554,7 +554,7 @@ namespace s2industries.ZUGFeRD
             {
                 foreach (AdditionalReferencedDocument document in this.Descriptor.AdditionalReferencedDocuments)
                 {
-                    Writer.WriteStartElement("ram:AdditionalReferencedDocument", Profile.Comfort | Profile.Extended | Profile.XRechnung);
+                    Writer.WriteStartElement("ram:AdditionalReferencedDocument", Profile.Comfort | Profile.Extended | Profile.XRechnung2 | Profile.XRechnung);
                     Writer.WriteElementString("ram:IssuerAssignedID", document.ID);
                     Writer.WriteElementString("ram:TypeCode", document.TypeCode.EnumValueToString());
 
@@ -593,9 +593,9 @@ namespace s2industries.ZUGFeRD
             if (Descriptor.SpecifiedProcuringProject != null)
             {
 
-                Writer.WriteStartElement("ram:SpecifiedProcuringProject", Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
-                Writer.WriteElementString("ram:ID", Descriptor.SpecifiedProcuringProject.ID, Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
-                Writer.WriteElementString("ram:Name", Descriptor.SpecifiedProcuringProject.Name, Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                Writer.WriteStartElement("ram:SpecifiedProcuringProject", Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
+                Writer.WriteElementString("ram:ID", Descriptor.SpecifiedProcuringProject.ID, Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
+                Writer.WriteElementString("ram:Name", Descriptor.SpecifiedProcuringProject.Name, Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                 Writer.WriteEndElement(); // !ram:SpecifiedProcuringProject
             }
             #endregion
@@ -631,7 +631,7 @@ namespace s2industries.ZUGFeRD
 
                 if (this.Descriptor.DeliveryNoteReferencedDocument.IssueDateTime.HasValue)
                 {
-                    Writer.WriteStartElement("ram:FormattedIssueDateTime", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung));
+                    Writer.WriteStartElement("ram:FormattedIssueDateTime", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung));
                     Writer.WriteStartElement("qdt:DateTimeString");
                     Writer.WriteAttributeString("format", "102");
                     Writer.WriteValue(_formatDate(this.Descriptor.DeliveryNoteReferencedDocument.IssueDateTime.Value));
@@ -672,7 +672,7 @@ namespace s2industries.ZUGFeRD
             //   1. CreditorReferenceID (optional)
             if (!String.IsNullOrWhiteSpace(this.Descriptor.PaymentMeans?.SEPACreditorIdentifier))
             {
-                Writer.WriteOptionalElementString("ram:CreditorReferenceID", Descriptor.PaymentMeans?.SEPACreditorIdentifier, Profile.BasicWL | Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung | Profile.XRechnung1);
+                Writer.WriteOptionalElementString("ram:CreditorReferenceID", Descriptor.PaymentMeans?.SEPACreditorIdentifier, Profile.BasicWL | Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung2 | Profile.XRechnung | Profile.XRechnung1);
             }
 
             //   2. PaymentReference (optional)
@@ -697,13 +697,13 @@ namespace s2industries.ZUGFeRD
 
                     if ((this.Descriptor.PaymentMeans != null) && (this.Descriptor.PaymentMeans.TypeCode != PaymentMeansTypeCodes.Unknown))
                     {
-                        Writer.WriteStartElement("ram:SpecifiedTradeSettlementPaymentMeans", Profile.BasicWL | Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                        Writer.WriteStartElement("ram:SpecifiedTradeSettlementPaymentMeans", Profile.BasicWL | Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                         Writer.WriteElementString("ram:TypeCode", this.Descriptor.PaymentMeans.TypeCode.EnumToString());
                         Writer.WriteElementString("ram:Information", this.Descriptor.PaymentMeans.Information);
 
                         if (this.Descriptor.PaymentMeans.FinancialCard != null)
                         {
-                            Writer.WriteStartElement("ram:ApplicableTradeSettlementFinancialCard", Profile.Comfort | Profile.Extended | Profile.XRechnung);
+                            Writer.WriteStartElement("ram:ApplicableTradeSettlementFinancialCard", Profile.Comfort | Profile.Extended | Profile.XRechnung2 | Profile.XRechnung);
                             Writer.WriteOptionalElementString("ram:ID", Descriptor.PaymentMeans.FinancialCard.Id);
                             Writer.WriteOptionalElementString("ram:CardholderName", Descriptor.PaymentMeans.FinancialCard.CardholderName);
                             Writer.WriteEndElement(); // !ram:ApplicableTradeSettlementFinancialCard
@@ -725,7 +725,7 @@ namespace s2industries.ZUGFeRD
 
                         if (this.Descriptor.PaymentMeans.FinancialCard != null)
                         {
-                            Writer.WriteStartElement("ram:ApplicableTradeSettlementFinancialCard", Profile.Comfort | Profile.Extended | Profile.XRechnung);
+                            Writer.WriteStartElement("ram:ApplicableTradeSettlementFinancialCard", Profile.Comfort | Profile.Extended | Profile.XRechnung2 | Profile.XRechnung);
                             Writer.WriteOptionalElementString("ram:ID", Descriptor.PaymentMeans.FinancialCard.Id);
                             Writer.WriteOptionalElementString("ram:CardholderName", Descriptor.PaymentMeans.FinancialCard.CardholderName);
                             Writer.WriteEndElement(); // !ram:ApplicableTradeSettlementFinancialCard
@@ -785,7 +785,7 @@ namespace s2industries.ZUGFeRD
             //  12. BillingSpecifiedPeriod (optional)
             if (Descriptor.BillingPeriodStart.HasValue || Descriptor.BillingPeriodEnd.HasValue)
             {
-                Writer.WriteStartElement("ram:BillingSpecifiedPeriod", Profile.BasicWL | Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                Writer.WriteStartElement("ram:BillingSpecifiedPeriod", Profile.BasicWL | Profile.Basic | Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                 if (Descriptor.BillingPeriodStart.HasValue)
                 {
                     Writer.WriteStartElement("ram:StartDateTime");
@@ -813,11 +813,11 @@ namespace s2industries.ZUGFeRD
                     Writer.WriteElementString("udt:Indicator", tradeAllowanceCharge.ChargeIndicator ? "true" : "false");
                     Writer.WriteEndElement(); // !ram:ChargeIndicator
 
-                    Writer.WriteStartElement("ram:CalculationPercent", profile: Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
+                    Writer.WriteStartElement("ram:CalculationPercent", profile: Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung2 | Profile.XRechnung2 | Profile.XRechnung);
                     Writer.WriteValue(_formatDecimal(100 / tradeAllowanceCharge.BasisAmount * tradeAllowanceCharge.ActualAmount));
                     Writer.WriteEndElement();
 
-                    Writer.WriteStartElement("ram:BasisAmount", profile: Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                    Writer.WriteStartElement("ram:BasisAmount", profile: Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
                     Writer.WriteValue(_formatDecimal(tradeAllowanceCharge.BasisAmount));
                     Writer.WriteEndElement();
 
@@ -846,7 +846,7 @@ namespace s2industries.ZUGFeRD
             {
                 foreach (ServiceCharge serviceCharge in this.Descriptor.ServiceCharges)
                 {
-                    Writer.WriteStartElement("ram:SpecifiedLogisticsServiceCharge", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung));
+                    Writer.WriteStartElement("ram:SpecifiedLogisticsServiceCharge", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung));
                     Writer.WriteOptionalElementString("ram:Description", serviceCharge.Description);
                     Writer.WriteElementString("ram:AppliedAmount", _formatDecimal(serviceCharge.Amount));
                     if (serviceCharge.Tax != null)
@@ -895,7 +895,7 @@ namespace s2industries.ZUGFeRD
                 _writeOptionalAmount(Writer, "ram:TaxBasisTotalAmount", this.Descriptor.TaxBasisAmount);   // Rechnungsgesamtbetrag ohne Umsatzsteuer
             }
             _writeOptionalAmount(Writer, "ram:TaxTotalAmount", this.Descriptor.TaxTotalAmount, forceCurrency: true);               // Gesamtbetrag der Rechnungsumsatzsteuer, Steuergesamtbetrag in Buchungswährung
-            _writeOptionalAmount(Writer, "ram:RoundingAmount", this.Descriptor.RoundingAmount, profile: Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);  // RoundingAmount  //Rundungsbetrag
+            _writeOptionalAmount(Writer, "ram:RoundingAmount", this.Descriptor.RoundingAmount, profile: Profile.Comfort | Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);  // RoundingAmount  //Rundungsbetrag
             _writeOptionalAmount(Writer, "ram:GrandTotalAmount", this.Descriptor.GrandTotalAmount);                                // Rechnungsgesamtbetrag einschließlich Umsatzsteuer
             _writeOptionalAmount(Writer, "ram:TotalPrepaidAmount", this.Descriptor.TotalPrepaidAmount);                            // Vorauszahlungsbetrag
             _writeOptionalAmount(Writer, "ram:DuePayableAmount", this.Descriptor.DuePayableAmount);                                // Fälliger Zahlungsbetrag
@@ -920,7 +920,7 @@ namespace s2industries.ZUGFeRD
             #region ReceivableSpecifiedTradeAccountingAccount
             if (this.Descriptor.ReceivableSpecifiedTradeAccountingAccounts != null && this.Descriptor.ReceivableSpecifiedTradeAccountingAccounts.Count > 0)
             {
-                if (descriptor.Profile == Profile.XRechnung1 || descriptor.Profile == Profile.XRechnung)
+                if (descriptor.Profile == Profile.XRechnung1 || descriptor.Profile == Profile.XRechnung2 || descriptor.Profile == Profile.XRechnung)
                 {
                     if (!string.IsNullOrWhiteSpace(this.Descriptor.ReceivableSpecifiedTradeAccountingAccounts[0].TradeAccountID))
                     {
@@ -991,7 +991,7 @@ namespace s2industries.ZUGFeRD
                 }
             }
 
-            if ((descriptor.Profile == Profile.XRechnung) || (descriptor.Profile == Profile.XRechnung1))
+            if ((descriptor.Profile == Profile.XRechnung) || (descriptor.Profile == Profile.XRechnung2) || (descriptor.Profile == Profile.XRechnung1))
             {
                 if (descriptor.Seller != null)
                 {
@@ -1134,37 +1134,37 @@ namespace s2industries.ZUGFeRD
                     // all profiles
                     break;
                 case PartyTypes.ShipToTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.UltimateShipToTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.ShipFromTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.InvoiceeTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.PayeeTradeParty:
                     // all profiles
                     break;
                 case PartyTypes.SalesAgentTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.BuyerTaxRepresentativeTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.ProductEndUserTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.BuyerAgentTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.InvoicerTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.PayerTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 default:
                     return;
@@ -1214,37 +1214,37 @@ namespace s2industries.ZUGFeRD
                 case PartyTypes.BuyerTradeParty:
                     break;
                 case PartyTypes.ShipToTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.UltimateShipToTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.ShipFromTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.InvoiceeTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.PayeeTradeParty:
                     if (this.Descriptor.Profile == Profile.Minimum) { return; } // party is written for all profiles but minimum
                     break;
                 case PartyTypes.SalesAgentTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.BuyerTaxRepresentativeTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.ProductEndUserTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.BuyerAgentTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.InvoicerTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 case PartyTypes.PayerTradeParty:
-                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
+                    if ((this.Descriptor.Profile != Profile.Extended) && (this.Descriptor.Profile != Profile.XRechnung1) && (this.Descriptor.Profile != Profile.XRechnung2) && (this.Descriptor.Profile != Profile.XRechnung)) { return; } // extended, XRechnung1, XRechnung profile only
                     break;
                 default:
                     return;
@@ -1319,7 +1319,7 @@ namespace s2industries.ZUGFeRD
                 writer.WriteOptionalElementString("ram:Name", party.Name);
 
                 _writeOptionalLegalOrganization(writer, "ram:SpecifiedLegalOrganization", party.SpecifiedLegalOrganization, partyType);
-                _writeOptionalContact(writer, "ram:DefinedTradeContact", contact, Profile.Extended | Profile.XRechnung1 | Profile.XRechnung);
+                _writeOptionalContact(writer, "ram:DefinedTradeContact", contact, Profile.Extended | Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung);
 
                 writer.WriteStartElement("ram:PostalTradeAddress");
                 writer.WriteElementString("ram:PostcodeCode", party.Postcode); // BT-53
@@ -1392,7 +1392,7 @@ namespace s2industries.ZUGFeRD
 
             if (!String.IsNullOrWhiteSpace(contact.FaxNo))
             {
-                writer.WriteStartElement("ram:FaxUniversalCommunication", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung));
+                writer.WriteStartElement("ram:FaxUniversalCommunication", ALL_PROFILES ^ (Profile.XRechnung1 | Profile.XRechnung2 | Profile.XRechnung));
                 writer.WriteElementString("ram:CompleteNumber", contact.FaxNo);
                 writer.WriteEndElement();
             }
