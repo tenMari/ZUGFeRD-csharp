@@ -287,7 +287,7 @@ namespace s2industries.ZUGFeRD
 
                             #region ActualAmount
                             Writer.WriteStartElement("ram:ActualAmount");
-                            Writer.WriteValue(_formatDecimal(tradeAllowanceCharge.ActualAmount, 2));
+                            Writer.WriteValue(_formatDecimal(tradeAllowanceCharge.ActualAmount, 4)); //"Gross price - Allowance amount = Net price" Gross and Net price have 4 decimals
                             Writer.WriteEndElement();
                             #endregion
 
